@@ -48,7 +48,7 @@ const seed = (data) => {
         return [user.username, user.avatar_url, user.name];
       });
       const querystr = format(
-        `INSERT INTO users(username, avatar_url, name) VALUES %L RETURNING*;`,
+        `INSERT INTO users(username, avatar_url, name) VALUES %L;`,
         formatteduser
       );
       return db.query(querystr);
@@ -58,7 +58,7 @@ const seed = (data) => {
         return [categ.slug, categ.description];
       });
       const querystr1 = format(
-        `INSERT INTO categories(slug, description) VALUES %L RETURNING*;`,
+        `INSERT INTO categories(slug, description) VALUES %L;`,
         formattedcategory
       );
       return db.query(querystr1);
@@ -78,7 +78,7 @@ const seed = (data) => {
       });
       const querystr2 = format(
         `INSERT INTO reviews(title, review_body, designer, review_img_url, votes,
-    category, owner, created_at) VALUES %L RETURNING*;`,
+    category, owner, created_at) VALUES %L;`,
         formattedreview
       );
       return db.query(querystr2);
@@ -94,7 +94,7 @@ const seed = (data) => {
         ];
       });
       const querystr3 = format(
-        `INSERT INTO comments(author, review_id,votes, created_at, body) VALUES %L RETURNING*;`,
+        `INSERT INTO comments(author, review_id,votes, created_at, body) VALUES %L;`,
         formattedcomment
       );
       return db.query(querystr3);
