@@ -3,6 +3,8 @@ const {
   checkIfReviewExists,
   updateReviews,
   searchReviews,
+  searchComments,
+  postAComment,
 } = require("../models/reviews.models");
 
 exports.selectReviewsByReviewId = (req, res, next) => {
@@ -21,6 +23,7 @@ exports.selectReviewsByReviewId = (req, res, next) => {
 exports.updateReviewVoteById = (req, res, next) => {
   const { review_id } = req.params;
   const { inc_votes } = req.body;
+
   updateReviews(review_id, inc_votes)
     .then((updatedReview) => {
       res.status(200).send({ updatedReview });
@@ -29,11 +32,33 @@ exports.updateReviewVoteById = (req, res, next) => {
 };
 
 exports.collectReviews = (req, res, next) => {
-  console.log("inside the collect reviews controller");
   const { sort_by, order, category } = req.query;
+
   searchReviews(sort_by, order, category)
     .then((reviews) => {
       res.status(200).send({ reviews });
+    })
+    .catch(next);
+};
+
+exports.collectComments = (req, res, next) => {
+  const { review_id } = req.params;
+
+  Promise.all([searchComments(review_id), checkIfReviewExists(review_id)])
+    .then(([comments]) => {
+      res.status(200).send({ comments });
+    })
+    .catch(next);
+};
+
+exports.addAComment = (req, res, next) => {
+  const { review_id } = req.params;
+  const { username, body } = req.body;
+
+  postAComment(review_id, username, body)
+    .then((comment) => {
+      console.log(comment[0].body, "here");
+      res.status(200).send({ comment });
     })
     .catch(next);
 };

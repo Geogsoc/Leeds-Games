@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const { commentData } = require("../db/data/test-data");
 
 exports.collectReviewByReviewId = (review_id) => {
   // if (isNaN(review_id)) {
@@ -47,7 +48,6 @@ exports.searchReviews = (
   order = "DESC",
   category = null
 ) => {
-  console.log("inside the collect reviews model");
   if (
     ![
       "review_id",
@@ -58,11 +58,13 @@ exports.searchReviews = (
       "created_at",
       "votes",
       "comment_count",
-    ]
+    ].includes(sort_by)
   ) {
     return Promise.reject({ status: 400, msg: "Invalid sort_by query" });
   }
-  if (!["euro game", "dexterity", "social deduction "]) {
+  if (
+    !["euro game", "dexterity", "social deduction", null].includes(category)
+  ) {
     return Promise.reject({ status: 400, msg: "Invalid category filter" });
   }
   if (!["ASC", "DESC"].includes(order)) {
@@ -76,6 +78,32 @@ exports.searchReviews = (
   LEFT JOIN comments ON comments.review_id=reviews.review_id 
   WHERE reviews.category = COALESCE(${category},category) GROUP BY reviews.review_id 
   ORDER BY reviews.${sort_by} ${order};`
+    )
+    .then((result) => {
+      return result.rows;
+    });
+};
+
+exports.searchComments = (review_id) => {
+  return db
+    .query(
+      `SELECT comments.comment_id, comments.votes, comments.created_at, comments.body, users.username AS author
+  FROM comments
+  JOIN users ON users.username=comments.author
+  WHERE comments.review_id=$1;`,
+      [review_id]
+    )
+    .then((result) => {
+      return result.rows;
+    });
+};
+
+exports.postAComment = (review_id, username, body) => {
+  return db
+    .query(
+      `INSERT INTO comments (body, author, review_id) 
+    VALUES ($1, $2, $3) RETURNING comments.body;`,
+      [body, username, review_id]
     )
     .then((result) => {
       return result.rows;
