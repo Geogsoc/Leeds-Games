@@ -14,21 +14,94 @@
       ]
     }
   },
+  "GET /api/reviews/:review_id": {
+    "description": "serves an object of specific review",
+    "queries": [],
+    "exampleResponse": {
+      "review": [
+        {
+          "owner": "One Night Ultimate Werewolf",
+          "title": "Game",
+          "Review_id": 2,
+          "review body": "was a really good game",
+          "designer": "Akihisa Okui",
+          "owner": "happyamy2016",
+          "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+          "category": "hidden-roles",
+          "created_at": 1610964101251,
+          "votes": 5,
+          "comment_count": 7
+        }
+      ]
+    }
+  },
+  "PATCH /api/reviews/:review_id": {
+    "description": "updates a review vote count by given amount and responds with updated review",
+    "queries": [],
+    "exampleResponse": {
+      "review": [
+        {
+          "review_id": 1,
+          "title": "One Night Ultimate Werewolf",
+          "designer": "Akihisa Okui",
+          "owner": "happyamy2016",
+          "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+          "category": "hidden-roles",
+          "review_body": "Great Fun",
+          "created_at": 1610964101251,
+          "votes": 6
+        }
+      ]
+    }
+  },
+
   "GET /api/reviews": {
     "description": "serves an array of all reviews",
     "queries": ["category", "sort_by", "order"],
     "exampleResponse": {
       "reviews": [
         {
-          "title": "One Night Ultimate Werewolf",
-          "designer": "Akihisa Okui",
-          "owner": "happyamy2016",
+          "owner": "One Night Ultimate Werewolf",
+          "title": "game great",
+          "review_id": 2,
           "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
           "category": "hidden-roles",
           "created_at": 1610964101251,
-          "votes": 5
+          "votes": 5,
+          "comment_count": 2
         }
       ]
     }
+  },
+  " GET /api/reviews/:review_id/comments": {
+    "description": "serves an array of all comments for given review",
+    "queries": [],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 4,
+          "created_at": 1610964101251,
+          "votes": 5,
+          "author": "Jeff",
+          "body": "It was great"
+        }
+      ]
+    }
+  },
+  " POST /api/reviews/:review_id/comments": {
+    "description": "Posts a review comment and reponds with the posted comment",
+    "queries": [],
+    "exampleResponse": {
+      "comment": [
+        {
+          "body": "I agree it was great"
+        }
+      ]
+    }
+  },
+  " DELETE /api/comments/:comment_id": {
+    "description": "Removes a comment based on its id",
+    "queries": [],
+    "exampleResponse": {}
   }
 }

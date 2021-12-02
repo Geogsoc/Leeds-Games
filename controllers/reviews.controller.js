@@ -1,3 +1,4 @@
+// const { userData } = require("../db/data/test-data");
 const {
   collectReviewByReviewId,
   checkIfReviewExists,
@@ -5,6 +6,8 @@ const {
   searchReviews,
   searchComments,
   postAComment,
+  checkIfUserExists,
+  deleteComment,
 } = require("../models/reviews.models");
 
 exports.selectReviewsByReviewId = (req, res, next) => {
@@ -57,7 +60,6 @@ exports.addAComment = (req, res, next) => {
 
   postAComment(review_id, username, body)
     .then((comment) => {
-      console.log(comment[0].body, "here");
       res.status(200).send({ comment });
     })
     .catch(next);

@@ -14,6 +14,10 @@ You are now connected to database "nc_games_test" as user "elis".
  mallionaire | Mollit elit qui incididunt veniam occaecat cupidatat |         7 | social deduction | https://images.pexels.com/photos/278888/pexels-photo-278888.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260   | 2021-01-25 11:16:54.963 |     9 |             0
 (11 rows)
 
+ username | avatar_url | name 
+----------+------------+------
+(0 rows)
+
           List of relations
  Schema |    Name    | Type  | Owner 
 --------+------------+-------+-------

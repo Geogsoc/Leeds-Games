@@ -112,7 +112,7 @@ describe("PATCH /api/reviews/:review_id", () => {
         expect(res.body.msg).toBe("no review found");
       });
   });
-  test("Responds status 400 Bad request with valid id but sending object with wrong data type", () => {
+  test("Responds status 400 Invalid Input with valid id but sending object with wrong data type", () => {
     const inc_votes = { inc_votes: "cheese" };
     return request(app)
       .patch("/api/reviews/1")
@@ -250,6 +250,16 @@ describe("GET api/reviews", () => {
         expect(res.body.reviews).toBeSortedBy("created_at");
       });
   });
+
+  test("Responds status 200, if passed category that does not exist filter returns empty array", () => {
+    return request(app)
+      .get("/api/reviews?category=cheese burger")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.reviews).toBeInstanceOf(Array);
+        expect(res.body.reviews).toHaveLength(0);
+      });
+  });
   test("Responds status 400, if passed invalid sort by query", () => {
     return request(app)
       .get("/api/reviews?sort_by=this_is_invalid")
@@ -264,14 +274,6 @@ describe("GET api/reviews", () => {
       .expect(400)
       .then((res) => {
         expect(res.body.msg).toBe("Invalid order query");
-      });
-  });
-  test("Responds status 400, if passed invalid category filter", () => {
-    return request(app)
-      .get("/api/reviews?category=cheese burger")
-      .expect(400)
-      .then((res) => {
-        expect(res.body.msg).toBe("Invalid category filter");
       });
   });
 });
@@ -307,7 +309,7 @@ describe("GET /api/reviews/:review_id/comments", () => {
       });
   });
 
-  test("Responds status 404, Bad request if passed an id that doesnt exist currently", () => {
+  test("Responds status 404, Invalid request if passed an id that doesnt exist currently", () => {
     return request(app)
       .get("/api/reviews/55/comments")
       .expect(404)
@@ -317,11 +319,11 @@ describe("GET /api/reviews/:review_id/comments", () => {
   });
 });
 
-describe.only("POST /api/reviews/:review_id/comments", () => {
-  test("Responds status 200 with the posted comment`", () => {
+describe("POST /api/reviews/:review_id/comments", () => {
+  test("Responds status 200, with the posted comment`", () => {
     const comment = {
-      username: "mallinaire",
-      body: "a fun time was had by all",
+      username: "mallionaire",
+      body: "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.",
     };
     return request(app)
       .post("/api/reviews/2/comments")
@@ -331,5 +333,82 @@ describe.only("POST /api/reviews/:review_id/comments", () => {
         expect(res.body.comment).toBeInstanceOf(Array);
         expect(res.body.comment).toHaveLength(1);
       });
+  });
+  test("Responds status 404 Invalid Input, for an a review id that does not currently exist", () => {
+    const comment = {
+      username: "mallionaire",
+      body: "a fun time was had by all",
+    };
+    return request(app)
+      .post("/api/reviews/20/comments")
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Invalid Input");
+      });
+  });
+  test("Responds status 400 Invalid Input, for an a review id of the wrong data type", () => {
+    const comment = {
+      username: "mallionaire",
+      body: "a fun time was had by all",
+    };
+    return request(app)
+      .post("/api/reviews/beer/comments")
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Invalid Input");
+      });
+  });
+
+  test("Responds status 404 Invalid Input for user in the body doesn't exist currently", () => {
+    const comment = {
+      username: "Jeff",
+      body: "a fun time was had by all",
+    };
+    return request(app)
+      .post("/api/reviews/2/comments")
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Invalid Input");
+      });
+  });
+});
+describe("DELETE /api/comments/:comment_id", () => {
+  test("Responds 204 for for deleting comment with valid comment id", () => {
+    return request(app).delete("/api/comments/2").expect(204);
+  });
+  test("Responds status 204 for using id that does not currently exist", () => {
+    return request(app).delete("/api/comments/4000").expect(204);
+  });
+  test("Responds status 400 Invalid Input for using invalid comment id data type", () => {
+    return request(app)
+      .delete("/api/comments/z")
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Invalid Input");
+      });
+  });
+});
+
+describe("GET /api", () => {
+  test("Responds with an object of all the endpoints", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.endpoint).toBeInstanceOf(Object);
+        expect(res.body.endpoint).toHaveProperty(
+          "GET /api",
+          "GET /api/categories",
+          "GET /api/reviews/:review_id",
+          "PATCH /api/reviews/:review_id",
+          "GET /api/reviews",
+          " GET /api/reviews/:review_id/comments",
+          " POST /api/reviews/:review_id/comments",
+          " DELETE /api/comments/:comment_id"
+        );
+      });
+  });
+  test("Responds 404 with incorrect filepath", () => {
+    return request(app).get("/ap").expect(404);
   });
 });

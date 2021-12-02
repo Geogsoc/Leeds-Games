@@ -23,7 +23,7 @@ SELECT reviews.owner, reviews.title, reviews.review_id, reviews.category, review
 FROM reviews
 LEFT JOIN comments ON comments.review_id=reviews.review_id WHERE reviews.category = COALESCE('social deduction', category)  GROUP BY reviews.review_id ORDER BY reviews.created_at ASC;
 
-
+SELECT * FROM users WHERE username = 'mallionare';
 -- SELECT comments.comment_id, comments.votes, comments.created_at, comments.body, users.username AS author
 --   FROM comments
 --   JOIN users ON users.username=comments.author
