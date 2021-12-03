@@ -1,4 +1,4 @@
-project title - NCGAME 2021
+Project Title - NCGAME 2021
 
 This application allows users to post a review of a game and share their experiences of how they found it. Fellow users can gain access to the reviews and sort by various ways such as date and title and can filter by category type. If the current user also has an opinion on the review they can post a comment linked to the review and vote for it as a quality game. In turn votes can be made for the comment to show agreement (or disagreement) with the comment by other users.
 
@@ -19,7 +19,7 @@ The project requires two .env files to switch between the test and the developme
 2. env.test with PGDATABASE=nc_games_test written inside
 
 The following minimum version requirements are needed:
-Node.js and Postgres are
+Node.js 7.16.0 and Postgres 8.7.1
 
 To setup the database the following script can be run npm setup-dbs
 
