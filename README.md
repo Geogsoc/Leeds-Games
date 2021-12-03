@@ -1,6 +1,6 @@
 Project Title - NCGAME 2021
 
-This application allows users to post a review of a game and share their experiences of how they found it. Fellow users can gain access to the reviews and sort by various ways such as date and title and can filter by category type. If the current user also has an opinion on the review they can post a comment linked to the review and vote for it as a quality game. In turn votes can be made for the comment to show agreement (or disagreement) with the comment by other users.
+This application allows the access of data in a database of game reviews and will support the end users to post a review of a game and share their experiences of how they found it. Fellow users can gain access to the reviews and sort by various ways such as date and title and can filter by category type. If the current user also has an opinion on the review they can post a comment linked to the review and vote for it as a quality game. In turn votes can be made for the comment to show agreement (or disagreement) with the comment by other users.
 
 If you would like to try it out for yourself here is a link to the hosted version and details of each available endpoint.
 
