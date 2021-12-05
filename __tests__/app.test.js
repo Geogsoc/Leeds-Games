@@ -30,7 +30,7 @@ describe("GET api/categories", () => {
         });
       });
   });
-  test("Responds with error 404 with invalid route", () => {
+  test("Responds status 404 with invalid route", () => {
     return request(app).get("/api/categ").expect(404);
   });
 });
@@ -64,7 +64,7 @@ describe("GET /api/reviews/:review_id", () => {
       .get("/api/reviews/900")
       .expect(404)
       .then((res) => {
-        expect(res.body.msg).toBe("Invalid request");
+        expect(res.body.msg).toBe("Not found");
       });
   });
   test("Responds status 400 with a review id that id not valid", () => {
@@ -85,7 +85,7 @@ describe("PATCH /api/reviews/:review_id", () => {
       .send(inc_votes)
       .expect(200)
       .then((response) => {
-        expect(response.body.updatedReview).toEqual(
+        expect(response.body.comment).toEqual(
           expect.objectContaining({
             review_id: 1,
             title: "Agricola",
@@ -105,7 +105,7 @@ describe("PATCH /api/reviews/:review_id", () => {
   test("Responds status 404 no review found request with valid id data type but does not currently exist", () => {
     const inc_votes = { inc_votes: 2 };
     return request(app)
-      .patch("/api/reviews/100")
+      .patch("/api/reviews/1000")
       .send(inc_votes)
       .expect(404)
       .then((res) => {
@@ -156,21 +156,6 @@ describe("GET api/reviews", () => {
       .get("/api/reviews?sort_by=review_id")
       .expect(200)
       .then((res) => {
-        expect(res.body.reviews).toBeInstanceOf(Array);
-        expect(res.body.reviews).toHaveLength(13);
-        res.body.reviews.forEach((review) => {
-          expect(review).toEqual(
-            expect.objectContaining({
-              owner: expect.any(String),
-              title: expect.any(String),
-              review_id: expect.any(Number),
-              category: expect.any(String),
-              review_img_url: expect.any(String),
-              created_at: expect.any(String),
-              votes: expect.any(Number),
-            })
-          );
-        });
         expect(res.body.reviews).toBeSortedBy("review_id", {
           descending: true,
         });
@@ -182,21 +167,6 @@ describe("GET api/reviews", () => {
       .get("/api/reviews?order=ASC")
       .expect(200)
       .then((res) => {
-        expect(res.body.reviews).toBeInstanceOf(Array);
-        expect(res.body.reviews).toHaveLength(13);
-        res.body.reviews.forEach((review) => {
-          expect(review).toEqual(
-            expect.objectContaining({
-              owner: expect.any(String),
-              title: expect.any(String),
-              review_id: expect.any(Number),
-              category: expect.any(String),
-              review_img_url: expect.any(String),
-              created_at: expect.any(String),
-              votes: expect.any(Number),
-            })
-          );
-        });
         expect(res.body.reviews).toBeSortedBy("created_at");
       });
   });
@@ -234,30 +204,16 @@ describe("GET api/reviews", () => {
       .then((res) => {
         expect(res.body.reviews).toBeInstanceOf(Array);
         expect(res.body.reviews).toHaveLength(11);
-        res.body.reviews.forEach((review) => {
-          expect(review).toEqual(
-            expect.objectContaining({
-              owner: expect.any(String),
-              title: expect.any(String),
-              review_id: expect.any(Number),
-              category: expect.any(String),
-              review_img_url: expect.any(String),
-              created_at: expect.any(String),
-              votes: expect.any(Number),
-            })
-          );
-        });
         expect(res.body.reviews).toBeSortedBy("created_at");
       });
   });
 
-  test("Responds status 200, if passed category that does not exist filter returns empty array", () => {
+  test("Responds status 404, if passed category that does not exist", () => {
     return request(app)
-      .get("/api/reviews?category=cheese burger")
-      .expect(200)
+      .get("/api/reviews?category=cheese_burger")
+      .expect(404)
       .then((res) => {
-        expect(res.body.reviews).toBeInstanceOf(Array);
-        expect(res.body.reviews).toHaveLength(0);
+        expect(res.body.msg).toBe("Category not found");
       });
   });
   test("Responds status 400, if passed invalid sort by query", () => {
@@ -300,6 +256,16 @@ describe("GET /api/reviews/:review_id/comments", () => {
       });
   });
 
+  test("Responds status 200 with an empty array if valid existing review id has no comments", () => {
+    return request(app)
+      .get("/api/reviews/1/comments")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.comments).toBeInstanceOf(Array);
+        expect(res.body.comments).toHaveLength(0);
+      });
+  });
+
   test("Responds status 400, Invalid input if passed invalid review id data type", () => {
     return request(app)
       .get("/api/reviews/cheese/comments")
@@ -309,18 +275,18 @@ describe("GET /api/reviews/:review_id/comments", () => {
       });
   });
 
-  test("Responds status 404, Invalid request if passed an id that doesnt exist currently", () => {
+  test("Responds status 404, Not found if passed an id that doesnt exist currently", () => {
     return request(app)
       .get("/api/reviews/55/comments")
       .expect(404)
       .then((res) => {
-        expect(res.body.msg).toBe("Invalid request");
+        expect(res.body.msg).toBe("Not found");
       });
   });
 });
 
 describe("POST /api/reviews/:review_id/comments", () => {
-  test("Responds status 200, with the posted comment`", () => {
+  test("Responds status 201, with the posted comment`", () => {
     const comment = {
       username: "mallionaire",
       body: "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.",
@@ -328,10 +294,17 @@ describe("POST /api/reviews/:review_id/comments", () => {
     return request(app)
       .post("/api/reviews/2/comments")
       .send(comment)
-      .expect(200)
+      .expect(201)
       .then((res) => {
-        expect(res.body.comment).toBeInstanceOf(Array);
-        expect(res.body.comment).toHaveLength(1);
+        expect(res.body.comment).toEqual(
+          expect.objectContaining({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+          })
+        );
       });
   });
   test("Responds status 404 Invalid Input, for an a review id that does not currently exist", () => {
@@ -341,9 +314,9 @@ describe("POST /api/reviews/:review_id/comments", () => {
     };
     return request(app)
       .post("/api/reviews/20/comments")
-      .expect(400)
+      .expect(404)
       .then((res) => {
-        expect(res.body.msg).toBe("Invalid Input");
+        expect(res.body.msg).toBe("Not found");
       });
   });
   test("Responds status 400 Invalid Input, for an a review id of the wrong data type", () => {
@@ -366,18 +339,23 @@ describe("POST /api/reviews/:review_id/comments", () => {
     };
     return request(app)
       .post("/api/reviews/2/comments")
-      .expect(400)
+      .expect(404)
       .then((res) => {
-        expect(res.body.msg).toBe("Invalid Input");
+        expect(res.body.msg).toBe("Not found");
       });
   });
 });
 describe("DELETE /api/comments/:comment_id", () => {
-  test("Responds 204 for for deleting comment with valid comment id", () => {
+  test("Responds status 204 for for deleting comment with valid comment id", () => {
     return request(app).delete("/api/comments/2").expect(204);
   });
-  test("Responds status 204 for using id that does not currently exist", () => {
-    return request(app).delete("/api/comments/4000").expect(204);
+  test("Responds status 404 for using id that does not currently exist", () => {
+    return request(app)
+      .delete("/api/comments/4000")
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe("Not found");
+      });
   });
   test("Responds status 400 Invalid Input for using invalid comment id data type", () => {
     return request(app)
@@ -410,5 +388,47 @@ describe("GET /api", () => {
   });
   test("Responds 404 with incorrect filepath", () => {
     return request(app).get("/ap").expect(404);
+  });
+});
+
+describe("PATCH /api/comments/:comment_id", () => {
+  test("Responds status 204, will increment the vote by the given amount in the body and return the updated comment", () => {
+    const inc_votes = { inc_votes: 5 };
+    return request(app)
+      .patch("/api/comments/2")
+      .send(inc_votes)
+      .expect(200)
+      .then((res) => {
+        expect(res.body.comment).toEqual(
+          expect.objectContaining({
+            comment_id: expect.any(Number),
+            author: expect.any(String),
+            review_id: expect.any(Number),
+            created_at: expect.any(String),
+            body: expect.any(String),
+            votes: 18,
+          })
+        );
+      });
+  });
+  test("Responds status 404, with not currently existing comment id", () => {
+    const inc_votes = { inc_votes: 5 };
+    return request(app)
+      .patch("/api/comments/50000")
+      .send(inc_votes)
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toEqual("Not found");
+      });
+  });
+  test("Responds status 400, with invalid comment id data type", () => {
+    const inc_votes = { inc_votes: 5 };
+    return request(app)
+      .patch("/api/comments/thisisanerror")
+      .send(inc_votes)
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toEqual("Invalid Input");
+      });
   });
 });

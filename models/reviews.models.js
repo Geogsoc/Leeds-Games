@@ -10,16 +10,21 @@ exports.collectReviewByReviewId = (review_id) => {
       [review_id]
     )
     .then((result) => {
-      return result.rows;
+      const review = result.rows[0];
+      if (!review) {
+        return Promise.reject({ status: 404, msg: "Not found" });
+      } else {
+        return result.rows;
+      }
     });
 };
 
-exports.checkIfUserExists = (user) => {
+exports.checkIfcategoryExists = (category) => {
   return db
-    .query(`SELECT * FROM users WHERE username =$1;`, [user])
+    .query(`SELECT * FROM categories WHERE slug =$1;`, [category])
     .then(({ rows }) => {
       if (rows.length === 0)
-        return Promise.reject({ status: 404, msg: "Invalid User" });
+        return Promise.reject({ status: 404, msg: "Category not found" });
     });
 };
 
@@ -28,7 +33,7 @@ exports.checkIfReviewExists = (review_id) => {
     .query(`SELECT * FROM reviews WHERE review_id =$1;`, [review_id])
     .then(({ rows }) => {
       if (rows.length === 0)
-        return Promise.reject({ status: 404, msg: "Invalid request" });
+        return Promise.reject({ status: 404, msg: "Not found" });
     });
 };
 
@@ -107,10 +112,10 @@ exports.postAComment = (review_id, username, body) => {
   return db
     .query(
       `INSERT INTO comments (body, author, review_id) 
-    VALUES ($1, $2, $3) RETURNING comments.body;`,
+    VALUES ($1, $2, $3) RETURNING*;`,
       [body, username, review_id]
     )
     .then((result) => {
-      return result.rows;
+      return result.rows[0];
     });
 };

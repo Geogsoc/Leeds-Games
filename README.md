@@ -6,9 +6,6 @@ If you would like to try it out for yourself here is a link to the hosted versio
 
 https://ncgame2021.herokuapp.com/api
 
-To clone the project please click the green code tab and click the copy symbol.
-Open a terminal and type git clone and paste the URL you have just copied and press enter.
-
 The dependencies required for this project are dotenv, express, pg and p-gformat. They can be installed via the following terminal command.
 
 npm install dotenv express pg pg-format
