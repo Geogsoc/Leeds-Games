@@ -1,11 +1,10 @@
+app.use(cors());
 const express = require("express");
 const apiRouter = require("./routers/api.router");
 const app = express();
 app.use(express.json());
 app.use("/api", apiRouter);
 const cors = require("cors");
-
-app.use(cors());
 
 app.use((err, req, res, next) => {
   if (err.status) {
