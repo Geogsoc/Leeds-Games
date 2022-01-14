@@ -72,7 +72,7 @@ exports.searchReviews = (sort_by = "created_at", order = "DESC", category) => {
 
   const queryValues = [];
   let queryStr = `SELECT reviews.owner, reviews.title, reviews.review_id, reviews.category, reviews.review_img_url, 
-  reviews.created_at, reviews.votes, COUNT(author) AS comment_count 
+  reviews.created_at, reviews.votes, COUNT(comment_id)::int AS comment_count 
   FROM reviews
   LEFT JOIN comments ON comments.review_id=reviews.review_id `;
 
