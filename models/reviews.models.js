@@ -81,7 +81,7 @@ exports.searchReviews = (sort_by = "created_at", order = "DESC", category) => {
     queryStr += ` WHERE category= $1`;
   }
   queryStr += `GROUP BY reviews.review_id 
-ORDER BY reviews.${sort_by} ${order}`;
+ORDER BY ${sort_by} ${order}`;
 
   if (!["ASC", "DESC"].includes(order)) {
     return Promise.reject({ status: 400, msg: "Invalid order query" });

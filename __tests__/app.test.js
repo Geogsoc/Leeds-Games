@@ -162,6 +162,18 @@ describe("GET api/reviews", () => {
       });
   });
 
+  test("Responds status 200 with reviews in descending comment_count if requested", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=comment_count")
+      .expect(200)
+      .then((res) => {
+        console.log(res.body.reviews);
+        expect(res.body.reviews).toBeSortedBy("comment_count", {
+          descending: true,
+        });
+      });
+  });
+
   test("Responds status 200 with reviews in ascending date if requested", () => {
     return request(app)
       .get("/api/reviews?order=ASC")
